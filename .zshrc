@@ -84,12 +84,8 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+# Vim is my editor. Period.
+export EDITOR='vim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -108,3 +104,9 @@ prompt_context(){}
 # allowing git on go get
 export GIT_TERMINAL_PROMPT=1
 export GL_PAT=MY1sD7ZT6ipXxATbCD78
+
+# Some useful alias
+alias vi='/usr/bin/vim'
+# Alias for dotfile tracking
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias config='/usr/bin/git --git-dir=/home/elio/.cfg/ --work-tree=/home/elio'

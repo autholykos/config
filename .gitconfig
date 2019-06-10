@@ -1,0 +1,36 @@
+[user]
+	name=emanuele francioni
+	email=emanuele@dusk.network
+	username=autholykos
+[core]
+	editor=/usr/bin/vim
+[alias]
+	le=log --online --decorate
+	dog=log --all --decorate --oneline --graph
+	st=status
+	co=checkout
+	ls=log --pretty=format:"%C(green)%h\\ %C(yellow)[%ad]%Cred%d\\ %Creset%Cblue\\ [%cn]" --decorate --date=relative
+	#changelog
+	cl = log --pretty=format:"%C(yellow)[%an]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --color --no-merges
+	st = status -s
+
+	ci = commit
+	cm = commit -m
+	cma = commit -a -m
+	can = commit --amend -no-edit
+
+	#merges
+	ours = "!f() { git co --ours $@ && git add $@; }; f"
+	theirs = "!f() { git co --theirs $@ && git add $@; }; f"
+
+	#cherry-pick
+	cp = cherry-pick
+	d = difftool
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt=false
+[merge]
+	tool=vimdiff
+[blame]
+	date=relative
