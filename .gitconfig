@@ -4,6 +4,7 @@
 	username=autholykos
 [core]
 	editor=/usr/bin/vim
+	pager = less -FRSX
 [alias]
 	le=log --online --decorate
 	dog=log --all --decorate --oneline --graph
