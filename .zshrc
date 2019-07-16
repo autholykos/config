@@ -12,7 +12,7 @@ POWERLEVEL9K_MODE='awesome-fontconfig'
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME=powerlevel10k/powerlevel10k
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time context dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time context dir vcs newline)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status battery load)
 POWERLEVEL9K_STATUS_VERBOSE=false
 POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
@@ -68,12 +68,13 @@ eval `dircolors ~/dev/gnome-terminal-colors-solarized/dircolors`
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+export FZF_BASE="$HOME/.fzf"
 # Which plugins would you like to load?
 # Standard plugins can be found in ~/.oh-my-zsh/plugins/*
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(zsh-syntax-highlighting git fzf)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -86,6 +87,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Vim is my editor. Period.
 export EDITOR='vim'
+export MYVIMRC=~/.vimrc
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -95,18 +97,33 @@ export EDITOR='vim'
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 DEFAULT_USER=$USER
 prompt_context(){}
 
 # allowing git on go get
 export GIT_TERMINAL_PROMPT=1
-export GL_PAT=MY1sD7ZT6ipXxATbCD78
 
 # Some useful alias
 alias vi='/usr/bin/vim'
 # Alias for dotfile tracking
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias config='/usr/bin/git --git-dir=/home/elio/.cfg/ --work-tree=/home/elio'
+# fixing the backspace problem
+stty erase '^?'
+
+# Use ripgrep by default with FZF
+export FZF_DEFAULT_COMMAND='rg --files --ignore .git -g "" --hidden'
+
+# Find in file using rg and fzf
+fif() {
+  rg --files-with-matches --no-messages $1 | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 $1 || rg --ignore-case --pretty --context 10 $1 {}"
+}
+
+export GOPATH=/home/elio/go
+export GOBIN=$GOPATH/bin
+export PATH=$GOBIN:$PATH
+
+# Prevent <C-s> to freeze VIM
+alias vim="stty stop '' -ixoff ; vim"
+
+source ~/.radiorc
