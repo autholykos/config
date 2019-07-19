@@ -52,16 +52,49 @@ Plug 'morhetz/gruvbox'
 "****************************************************
 Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}			"golang support
 Plug 'neoclide/coc.nvim', {'branch': 'release'} "PLS client
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'branch': 'release/1.x',
+  \ 'for': [
+    \ 'javascript',
+    \ 'typescript',
+    \ 'css',
+    \ 'less',
+    \ 'scss',
+    \ 'json',
+    \ 'graphql',
+    \ 'markdown',
+    \ 'vue',
+    \ 'lua',
+    \ 'php',
+    \ 'python',
+    \ 'ruby',
+    \ 'html',
+    \ 'swift' ] }
 
 call plug#end()
 
 " Required
 filetype plugin indent on
 
-" ***************************************************
-"" Basic Setup
-" ***************************************************
+"*****************************************************************************
+" CORE SETUP
+"*****************************************************************************
 
+"{{{
+" remove trailing whitespaces
+command! FixWhitespace :%s/\s\+$//e
+
+" Reload .vimrc on save
+augroup GroupAutoVIMRC
+	autocmd!
+	autocmd bufwritepost .vimrc source $MYVIMRC
+augroup END
+
+let mapleader = "," " Mapping <leader> to ,
+
+" Editing .vimrc in a new tab window with --> `,v`
+nnoremap <leader>v :tabedit $MYVIMRC<CR>
 " fixing backspace
 set backspace=indent,eol,start
 
@@ -71,12 +104,33 @@ set fileencoding=utf-8
 set fileencodings=utf-8
 set ttyfast
 
+syntax on
+set ruler
+" terminal emulation
+nnoremap <silent> <leader>sh :terminal<CR>
+" getting rid of annoying CTRL-s freeze
+nnoremap <silent> <C-s> :w<CR>
+
+" Hybrid line number
+set number relativenumber
+
+augroup numbertoggle
+    autocmd!
+    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+    autocmd BufLeave,FocusLost,InsertEnter * set norelativenumber
+augroup end
 " Fixing the backspace problem for xterm
 " if &term == "xterm-256color"
 "   set t_kb=^?
 " endif
+"}}}
 
-" Indentation and bracket management "{{{
+
+"*****************************************************************************
+"" INDENTATION, BRACKETS AND VISUAL STUFF
+"*****************************************************************************
+"{{{
+
 " I'll take my tabs 4 spaces, ty
 set tabstop=4
 set softtabstop=0
@@ -90,19 +144,23 @@ set autochdir " vim will change to the directory containing the file
 set autowrite " saves file content automatically if make command is called
 nnoremap <silent> <C-s> :w<CR> " save file instead of locking the damn screen
 
-inoremap {<CR> {<CR>}<C-o>0<TAB>
-inoremap [<CR> [<CR>]<C-o>0<TAB>
-inoremap (<CR> (<CR>)<C-o>0<TAB>
-"}}}
+inoremap {<CR> {<CR>}<ESC><S-o>
+inoremap [<CR> [<CR>]<ESC><S-o>
+inoremap (<CR> (<CR>)<ESC><S-o>
 
-set hidden " Enable hidden buffers
+"" Switching windows
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+noremap <C-h> <C-w>h
 
-" Searching "{{{
-set hlsearch
-set incsearch
-set ignorecase
-set smartcase
-" }}}
+"" Vmap for maintain Visual Mode after shifting > and <
+vmap < <gv
+vmap > >gv
+
+"" Move visual block
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
 set fileformats=unix,dos,mac
 if exists('$SHELL')
@@ -111,29 +169,17 @@ else
     set shell=/bin/sh
 endif
 
-" Session management "{{{
+" Session management
 let g:session_directory = "~/.vim/session"
 let g:session_autoload = "no"
 let g:session_autosave = "no"
 let g:session_command_aliases = 1
+
 " }}}
 
 "*****************************************************
-" Visual Setup
+" COLORSCHEME AND VISUALIZATION SETUP
 "*****************************************************
-syntax on
-set ruler
-
-" Hybrid line number "{{{
-set number relativenumber
-
-augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-    autocmd BufLeave,FocusLost,InsertEnter * set norelativenumber
-augroup end
-"}}}
-
 
 let no_buffer_menu=1
 "silent! colorscheme dracula
@@ -145,6 +191,10 @@ set gfn=PragmataPro:h12
 
 " Vim 8 supports truecoloro terminal out of the box
 set termguicolors
+
+"" Split
+noremap <Leader>h :<C-u>split<CR>
+noremap <Leader>v :<C-u>vsplit<CR>
 
 " Am I on MACOS?
 if has("gui_running")
@@ -182,32 +232,10 @@ endif
 set scrolloff=5
 
 " ******************************************************
-" STATUS BAR
+" NERDTree
 " ******************************************************
-set laststatus=2
-set modeline
-set modelines=10
 
-set title
-set titleold="Terminal"
-set titlestring=%F
-set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
-
-if exists("*fugitive#statusline")
-    set statusline+=%{fugitive#statusline()}
-endif
-
-set statusline+=%{coc#status()}
-
-" vim-airline
-let g:airline_theme = 'powerlineish'
-let g:airline#extensions#branch#enabled = 1
-let g:airline#extensions#ale#enabled = 0
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tagbar#enabled = 1
-let g:airline_skip_empty_sections = 1
-
-"" NERDTree configuration "{{{
+"{{{
 let g:NERDTreeChDirMode=2
 let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
 let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
@@ -220,37 +248,13 @@ nnoremap <silent> <F2> :NERDTreeFind<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
 "}}}
 
-" grep.vim
-let Grep_Default_Options = '-IR'
-let Grep_Skip_Files = '*.log *.db'
-let Grep_Skip_Dirs = '.git node_modules'
 
-" terminal emulation
-nnoremap <silent> <leader>sh :terminal<CR>
-" getting rid of annoying CTRL-s freeze
-nnoremap <silent> <C-s> :w<CR>
 
-"*****************************************************************************
-"" Commands
-"*****************************************************************************
-" remove trailing whitespaces
-command! FixWhitespace :%s/\s\+$//e
-
-" Reload .vimrc on save "{{{
-augroup GroupAutoVIMRC
-	autocmd!
-	autocmd bufwritepost .vimrc source $MYVIMRC
-augroup END
-" }}}
-
-let mapleader = "," " Mapping <leader> to ,
-
-" Editing .vimrc in a new tab window with --> `,v`
-nnoremap <leader>v :tabedit $MYVIMRC<CR>
 
 "****************************************************************************
-"" Cursor Rules
+" CURSOR RULES
 "***************************************************************************
+"{{{
 set cursorline " Highlight current line or top
 
 "" Remember cursor position
@@ -269,9 +273,13 @@ augroup END
 "     autocmd VimLeave * silent !echo -ne "\033]12;gray\007"
 " endif
 
+"}}}
+
 "*****************************************************************************
-"" Autocmd Rules
+" AUTOCMD RULES
 "*****************************************************************************
+"{{{
+
 "" The PC is fast enough, do syntax highlight syncing from start unless 200 lines
 augroup vimrc-sync-fromstart
   autocmd!
@@ -309,11 +317,10 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 
-" Rid of annoyances "{{{
+" Rid of annoyances
 set noerrorbells
 set novisualbell
 set t_vb=
-"}}}
 
 " Ignore a bunch of backup, config, binary files
 set wildignore+=*.a,*.o,*.pyc
@@ -335,12 +342,13 @@ set foldlevel=2
 
 
 :imap jk <Esc>
-
-" Development Setup "{{{
+"}}}
 
 ""******************************************************************
-""Coc Setup
+" COC SETUP
 ""******************************************************************
+"{{{
+
 set cmdheight=2 " Number of screen lines to use for the command-line
 set updatetime=300 " Used by coc for diagnostic messages
 set shortmess+=c " disable | ins-completion-menu | messages
@@ -414,10 +422,13 @@ nnoremap <silent> <space>s :<C-u>Coclist -I symbols<CR>
 " Search symbols in current document
 nnoremap <silent> <space>o :<C-u>Coclist outline<CR>
 
+"}}}
+
 ""******************************************************************
-""Vim-Go Setup
+" VIM-GO SETUP
 ""******************************************************************
 
+"{{{
 " Allowing coc to do the `gd` (GoDef) resolution
 autocmd FileType go nmap <leader>b <Plug>(go-build)
 autocmd FileType go nmap <leader>r <Plug>(go-run)
@@ -433,81 +444,7 @@ let g:go_highlight_functions = 1
 
 let g:go_metalinter_autosave = 1
 let g:go_metalinter_autosave_enabled = ['vet', 'golint']
-"}}}
 
-"" Split
-noremap <Leader>h :<C-u>split<CR>
-noremap <Leader>v :<C-u>vsplit<CR>
-
-"}}}
-
-"*****************************************************************************
-"" Fuzzy Finding (FZF) and Grep options (RipGrep)
-"*****************************************************************************
-"{{{
-set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*.prof,*.log
-
-" ripgrep
-if executable('rg')
-  let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
-  set grepprg=rg\ --vimgrep
-  command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
-else 
-    let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
-endif
-
-" Ctrl-p like functionalities but with fzf
-nnoremap <C-p> :Files<CR>
-" Searching for content within the file
-nnoremap <C-f> :Rg<CR>
-
-nnoremap <silent> <leader>b :Buffers<CR>
-nnoremap <silent> <leader>e :FZF -m<CR>
-"Recovery commands from history through FZF
-nmap <leader>y :History:<CR>
-"}}}
-
-"" Buffer nav
-noremap <silent> <C-l> :bn<CR>
-noremap <silent> <C-h> :bp<CR>
-noremap <leader>z :bp<CR>
-noremap <leader>q :bp<CR>
-noremap <leader>x :bn<CR>
-noremap <leader>w :bn<CR>
-
-"" Close buffer
-"noremap <leader>c :bd<CR>
-
-"" Clean search (highlight)
-nnoremap <silent> <leader><space> :noh<cr>
-" ale
-" let g:ale_linters = {}
-
-"" Switching windows
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-noremap <C-h> <C-w>h
-
-"" Vmap for maintain Visual Mode after shifting > and <
-vmap < <gv
-vmap > >gv
-
-"" Move visual block
-vnoremap J :m '>+1<CR>gv=gv
-vnoremap K :m '<-2<CR>gv=gv
-
-"" Open current line on GitHub
-"nnoremap <Leader>o :.Gbrowse<CR>
-
-"*****************************************************************************
-"" Custom configs
-"*****************************************************************************
-
-" go
-" vim-go
-" run :GoBuild or :GoTestCompile based on the go file
 function! s:build_go_files()
   let l:file = expand('%')
   if l:file =~# '^\f\+_test\.go$'
@@ -536,13 +473,6 @@ let g:go_highlight_extra_types = 1
 
 autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
 
-" augroup completion_preview_close
-"   autocmd!
-"   if v:version > 703 || v:version == 703 && has('patch598')
-"     autocmd CompleteDone * if !&previewwindow && &completeopt =~ 'preview' | silent! pclose | endif
-"   endif
-" augroup END
-
 augroup go
 
   au!
@@ -568,25 +498,124 @@ augroup go
 
 augroup END
 
-" ale
-" :call extend(g:ale_linters, {"go": ['golint', 'go vet'], })
+"}}}
 
 "*****************************************************************************
+"" JS AND REACT
 "*****************************************************************************
+"{{{
+augroup js
+    au!
+    au FileType js command! -nargs=0 Prettier :CocCommand prettier.formatFile
+    au FileType js vmap <leader>f  <Plug>(coc-format-selected)
+    au FileType js nmap <leader>f  <Plug>(coc-format-selected)
+augroup END
 
+"}}}
+
+"*****************************************************************************
+"" FUZZY FINDING (FZF), GREP OPTIONS (RIPGREP) & SEARCH CONFIG
+"*****************************************************************************
+"{{{
+
+" Searching 
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*.prof,*.log
+
+" Enabling FZF with RIPGREP
+if executable('rg')
+  let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
+  set grepprg=rg\ --vimgrep
+  command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+else 
+    let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
+endif
+
+" Ctrl-p like functionalities but with fzf
+nnoremap <C-p> :Files<CR>
+" Searching for content within the file
+nnoremap <C-f> :Rg<CR>
+
+nnoremap <silent> <leader>b :Buffers<CR>
+nnoremap <silent> <leader>e :FZF -m<CR>
+"Recovery commands from history through FZF
+nmap <leader>y :History:<CR>
+
+" grep.vim
+let Grep_Default_Options = '-IR'
+let Grep_Skip_Files = '*.log *.db'
+let Grep_Skip_Dirs = '.git node_modules'
+
+"" Clean search (highlight)
+nnoremap <silent> <leader><space> :noh<cr>
+"}}}
+
+"*****************************************************************************
+"" BUFFER
+"*****************************************************************************
+"{{{
+
+" Enable hidden buffers
+set hidden 
+
+"" Buffer nav
+noremap <leader>z :bp<CR>
+noremap <leader>q :bp<CR>
+noremap <leader>x :bn<CR>
+noremap <leader>w :bn<CR>
+
+"" Close buffer
+noremap <leader>c :bd<CR>
+"}}}
+
+
+"*****************************************************************************
+" LOCAL RELATED CONFIG
+"*****************************************************************************
+"{{{
 "" Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
+"}}}
 
 "*****************************************************************************
-"" Convenience variables
+"" STATUS & AIRLINE STATUSBAR
 "*****************************************************************************
 
+"{{{
 " vim-airline
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
+
+set laststatus=2
+set modeline
+set modelines=10
+
+set title
+set titleold="Terminal"
+set titlestring=%F
+set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
+
+if exists("*fugitive#statusline")
+    set statusline+=%{fugitive#statusline()}
+endif
+
+set statusline+=%{coc#status()}
+
+" vim-airline
+let g:airline_theme = 'powerlineish'
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#ale#enabled = 0
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tagbar#enabled = 1
+let g:airline_skip_empty_sections = 1
 
 if !exists('g:airline_powerline_fonts')
   let g:airline#extensions#tabline#left_sep = ' '
@@ -618,3 +647,4 @@ else
   let g:airline_symbols.readonly = ''
   let g:airline_symbols.linenr = ''
 endif
+"}}}
