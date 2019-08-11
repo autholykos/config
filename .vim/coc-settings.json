@@ -4,9 +4,15 @@
             "command": "gopls",
             "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
             "filetypes": ["go"]
+        },
+        "rust": {
+            "command": "ra_lsp_server",
+            "filetypes": ["rust"],
+            "rootPatterns": ["Cargo.toml"]
         }
     },
     "eslint.autofix": true,
     "suggest.echodocSupport": true,
-    "tsserver.enableJavascript": true
+    "tsserver.enableJavascript": true,
+    "coc.preferences.formatOnSaveFiletypes": ["css", "Markdown", "rust"]
 }
