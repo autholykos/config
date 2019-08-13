@@ -143,6 +143,7 @@ bindkey "^[OB" down-line-or-beginning-search
 bindkey -M vicmd "k" up-line-or-beginning-search
 bindkey -M vicmd "j" down-line-or-beginning-search
 bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M vicmd 'jk' vi-insert
 
 # vim-like editor opening
 bindkey -M vicmd "^V" edit-command-line
@@ -150,8 +151,8 @@ bindkey -M vicmd "^V" edit-command-line
 # avoid retyping bindkey everytime
 precmd() { RPROMPT="" }
 
-# make vi mode transition faster
-export KEYTIMEOUT=1
+# make vi mode transition faster but still enough to capture <ESC> mapping
+export KEYTIMEOUT=20
 
 
 # export MANPATH="/usr/local/man:$MANPATH"
