@@ -64,6 +64,3 @@ nmap <silent> <Leader>l <Plug>(go-metalinter)
 nmap <C-g> :GoDecls<cr>
 nmap <leader>dr :GoDeclsDir<cr>
 nmap <leader>rb :<C-u>call <SID>build_go_files()<CR>
-                                                              
-imap <C-g> <esc>:<C-u>GoDecls<cr>
-imap <leader>dr <esc>:<C-u>GoDeclsDir<cr>
