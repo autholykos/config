@@ -174,7 +174,6 @@ let g:session_directory = "~/.vim/session"
 let g:session_autoload = "no"
 let g:session_autosave = "no"
 let g:session_command_aliases = 1
-
 " }}}
 
 "*****************************************************
@@ -189,7 +188,7 @@ set t_Co=256
 set guioptions=egmrti
 set gfn=PragmataPro\ Mono\ Liga:h12
 
-" Vim 8 supports truecoloro terminal out of the box
+" Vim 8 supports truecolor terminal out of the box
 set termguicolors
 
 "" Split
@@ -228,7 +227,7 @@ if &term =~ '256color'
     set t_ut=
 endif
 
-" When jumping somewhere, make sure there are at least 3 lines from the bottom
+" When jumping somewhere, make sure there are at least 5 lines from the bottom
 set scrolloff=5
 
 " ******************************************************
@@ -243,13 +242,9 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 50
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 nnoremap <silent> <F2> :NERDTreeFind<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
 "}}}
-
-
-
 
 "****************************************************************************
 " CURSOR RULES
@@ -323,12 +318,15 @@ set novisualbell
 set t_vb=
 
 " Ignore a bunch of backup, config, binary files
-set wildignore+=*.a,*.o,*.pyc
+set wildmode=list:longest,list:full
+set wildignore+=*.a,*.o,*.so,*.obj,*.pyc,__pycache__,*.prof,*.log
 set wildignore+=*.bmp,*.gif,*.jpg,*.ico,*.png
 set wildignore+=.DS_Store,.git,.hg,.svn
 set wildignore+=*.swp,*.tmp,*~
+set wildignore+=*.zip,*.tgz,*.db,*.sqlite
 
-" I use git, no need for backups.
+" I am annoyed by swap files. I know that git is not a solution but I am OK
+" with it
 set nobackup
 set nowritebackup
 set noswapfile
@@ -340,7 +338,6 @@ set foldnestmax=10
 set nofoldenable
 set foldlevel=2
 
-
 :imap jk <Esc>
 "}}}
 
@@ -349,8 +346,19 @@ set foldlevel=2
 ""******************************************************************
 "{{{
 
+" Installing coc extensions
+let s:coc_extensions = [
+  \ 'coc-html',
+  \ 'coc-css',
+  \ 'coc-tsserver',
+  \ 'coc-json' ]
+
+for extension in s:coc_extensions
+    call coc#add_extension(extension)
+endfor
+
 set cmdheight=2 " Number of screen lines to use for the command-line
-set updatetime=300 " Used by coc for diagnostic messages
+set updatetime=300 " Used by coc for diagnostic messages and CursorHold
 set shortmess+=c " disable | ins-completion-menu | messages
 set signcolumn=yes " signcolumn 
 
@@ -370,9 +378,6 @@ endfunction
 "" Use <c-space> to trigger completion
 inoremap <silent><expr> <c-space> coc#refresh()
 
-"" Use <c-space> to trigger completion
-inoremap <silent><expr> <c-space> coc#refresh()
-
 " Use <CR> to confirm completion, <C-g>u means break undo chain at current
 " position.
 " Coc only does snippet and additional edit on confirm
@@ -382,11 +387,16 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 nmap <silent> [c <Plug>(coc-diagnostic-prev)
 nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
+""""""""""""""""""""""""""""""""""""""""
 " Remap keys for gotos
+""""""""""""""""""""""""""""""""""""""""
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
 
 "" Use k to show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -401,9 +411,6 @@ endfunction
 
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
 
 " Use `:Format` for formatting current buffer
 command! -nargs=0 Format :call CocAction('format')
@@ -425,21 +432,6 @@ nnoremap <silent> <space>o :<C-u>Coclist outline<CR>
 "}}}
 
 "*****************************************************************************
-"" JS AND REACT
-"*****************************************************************************
-"{{{
-autocmd BufNewFile,BufRead *.js setlocal noexpandtab tabstop=2 shiftwidth=2 softtabstop=2
-
-augroup js
-    au!
-    au FileType js command! -nargs=0 Prettier :CocCommand prettier.formatFile
-    au FileType js vmap <leader>f  <Plug>(coc-format-selected)
-    au FileType js nmap <leader>f  <Plug>(coc-format-selected)
-augroup END
-
-"}}}
-
-"*****************************************************************************
 "" FUZZY FINDING (FZF), GREP OPTIONS (RIPGREP) & SEARCH CONFIG
 "*****************************************************************************
 "{{{
@@ -450,8 +442,6 @@ set incsearch
 set ignorecase
 set smartcase
 
-set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,*.prof,*.log
 
 " Enabling FZF with RIPGREP
 if executable('rg')
