@@ -258,15 +258,17 @@ augroup vimrc-remember-cursor-position
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
+
 " Change cursor to underscore when in insert mode
-" if &term =~ "xterm\\|rxvt"
-"     "use an orange underscore in insert mode
-"     let &t_SI .= "\<Esc>]12;orange\x7[4 q"
-"     "use a block cursor in all others
-"     let &t_EI .= "\<Esc>]12;gray\x7[2 q"
-"     " reset cursor when vim exits
-"     autocmd VimLeave * silent !echo -ne "\033]12;gray\007"
-" endif
+"if &term =~ "xterm\\|rxvt"
+"    let &t_SR = "\<Esc>[4 q"
+"    "use an orange underscore in insert mode
+"    let &t_SI = "\<Esc>[6;orange q"
+"    "use a block cursor in all others
+"    let &t_EI = "\<Esc>[0 q"
+"    " reset cursor when vim exits
+"    autocmd VimLeave * silent !echo -ne "\033]12;gray\007"
+"endif
 
 "}}}
 
@@ -421,13 +423,13 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 
 " Using CocList
 " Show all diagnostic
-nnoremap <silent> <space>a :<C-u>Coclist diagnostics<CR>
+nnoremap <silent> <space>a :<C-u>CocList diagnostics<CR>
 " Show commands
-nnoremap <silent> <space>c :<C-u>Coclist commands<CR>
+nnoremap <silent> <space>c :<C-u>CocList commands<CR>
 " Search symbols
-nnoremap <silent> <space>s :<C-u>Coclist -I symbols<CR>
+nnoremap <silent> <space>s :<C-u>CocList -I symbols<CR>
 " Search symbols in current document
-nnoremap <silent> <space>o :<C-u>Coclist outline<CR>
+nnoremap <silent> <space>o :<C-u>CocList outline<CR>
 
 "}}}
 
