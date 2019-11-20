@@ -198,10 +198,16 @@ export LC_ALL=en_US.UTF-8
 
 export GOPATH=/home/elio/go
 export GOBIN=$GOPATH/bin
+export GO111MODULE="on"
 export PATH=$GOBIN:$PATH
 
 # Prevent <C-s> to freeze VIM
 alias vim="stty stop '' -ixoff ; vim"
 alias tmux="TERM=screen-256color tmux -2"
+
+## bypass WAYLAND
+#if [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
+#    GDK_BACKEND=x11 exec startx
+#fi
 
 source ~/.radiorc

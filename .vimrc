@@ -72,6 +72,14 @@ Plug 'prettier/vim-prettier', {
     \ 'html',
     \ 'swift' ] }
 
+" Python-mode is a popular IDE-like plugin for python which includes
+" - rope
+" - pylint
+" - pydoc
+" - breakpoints 
+" https://github.com/python-mode/python-mode
+Plug 'python-mode/python-mode', { 'branch': 'develop' }
+
 call plug#end()
 
 " Required
@@ -191,10 +199,6 @@ set gfn=PragmataPro\ Mono\ Liga:h12
 " Vim 8 supports truecolor terminal out of the box
 set termguicolors
 
-"" Split
-noremap <Leader>h :<C-u>split<CR>
-noremap <Leader>v :<C-u>vsplit<CR>
-
 " Am I on MACOS?
 if has("gui_running")
     if has("gui_mac") || has("gui_macvim")
@@ -231,11 +235,23 @@ endif
 set scrolloff=5
 
 " ******************************************************
+" HELPGREP SHORTCUTS
+" ******************************************************
+" These are all shortcuts for searching through a helpgrep
+nnoremap <S-F1> :cc<CR> " go to the current match after the helpfile
+nnoremap <F2>   :cnext<CR>
+nnoremap <S-F2> :cprev<CR>
+nnoremap <F3>   :cnfile<CR>
+nnoremap <S-F3> :cpfile<CR>
+nnoremap <F4>   :cfirst<CR>
+nnoremap <S-F4> :clast<CR>
+
+" ******************************************************
 " NERDTree
 " ******************************************************
 
 "{{{
-let g:NERDTreeChDirMode=0 " prevent NERDTree to chdir into the open file
+"let g:NERDTreeChDirMode=0 " prevent NERDTree to chdir into the open file
 let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
 let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeShowBookmarks=1

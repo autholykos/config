@@ -3,6 +3,10 @@ setlocal tabstop=4
 setlocal shiftwidth=4
 setlocal softtabstop=4
 
+setlocal tw=79
+setlocal fo+=t
+setlocal wrap
+
 ""******************************************************************
 " VIM-GO SETUP
 ""******************************************************************
@@ -58,9 +62,23 @@ nmap <Leader>db <Plug>(go-doc-browser)
                                                               
 nmap <leader>r  <Plug>(go-run)
 nmap <leader>t  <Plug>(go-test)
+nmap <leader>tf <Plug>(go-test-func)
 nmap <Leader>gt <Plug>(go-coverage-toggle)
-nmap <Leader>i <Plug>(go-info)
+nmap <Leader>i  <Plug>(go-info)
 nmap <silent> <Leader>l <Plug>(go-metalinter)
 nmap <C-g> :GoDecls<cr>
 nmap <leader>dr :GoDeclsDir<cr>
 nmap <leader>rb :<C-u>call <SID>build_go_files()<CR>
+
+" rebuild on save
+nnoremap <C-s> :w<CR>:<C-u>call <SID>build_go_files()<CR>
+
+" debugger
+nnoremap <F9>       :GoDebugBreakpoint<CR>
+nnoremap <F4>       :GoDebugTest<CR>
+nnoremap <F5>       :GoDebugStart<CR>
+nnoremap <S-F5>     :GoDebugStop<CR>
+nnoremap <C-F5>     :GoDebugRestart<CR>
+nnoremap <F7>       :GoDebugContinue<CR>
+nnoremap <S-F11>    :GoDebugStepOut<CR>
+nnoremap <F12>      :GoDebugPrint<CR>
